@@ -1,0 +1,26 @@
+{
+  "agreement_rate": {
+    "llama3b": 0.132,
+    "llama8b": 0.16,
+    "qwen14b": 0.108,
+    "qwen32b": 0.068,
+    "qwen3b": 0.108,
+    "qwen7b": 0.22
+  },
+  "confident_sycophancy": {
+    "llama3b": 0.112,
+    "llama8b": 0.188,
+    "qwen14b": 0.064,
+    "qwen32b": 0.032,
+    "qwen3b": 0.072,
+    "qwen7b": 0.176
+  },
+  "sycophant_with_knowledge": {
+    "llama3b": 0.128,
+    "llama8b": 0.176,
+    "qwen14b": 0.084,
+    "qwen32b": 0.08,
+    "qwen3b": 0.108,
+    "qwen7b": 0.2
+  }
+}
