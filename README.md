@@ -1,6 +1,6 @@
 # Sycophancy-Aware Multi-Agent Debate
 
-Code to go with the paper ``Too Polite to Disagree: Understanding Sycophancy Propagation in Multi-Agent Systems'' (COLM 2026).
+Code to go with the paper ``Too Polite to Disagree: Understanding Sycophancy Propagation in Multi-Agent Systems'' (SIGDIAL 2026).
 
 ## Requirements
 
@@ -15,7 +15,7 @@ Install dependencies:
 ```bash
 pip install torch transformers datasets huggingface_hub pydantic numpy pandas matplotlib seaborn
 ```
-
+https://github.com/0awesomeapples-dev/multiagent-discussion-sycophancy.git
 ## Models
 
 The pipeline uses 6 models by default (short name -> HuggingFace ID):
