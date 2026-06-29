@@ -2,6 +2,8 @@
 
 Code to go with the paper ``Too Polite to Disagree: Understanding Sycophancy Propagation in Multi-Agent Systems'' (SIGDIAL 2026).
 
+arXiv: [https://arxiv.org/pdf/2604.02668](https://arxiv.org/pdf/2604.02668)
+
 ## Requirements
 
 - Python 3.10+
@@ -156,3 +158,19 @@ BSS is computed from four metrics (see `bss_calc.py`):
 - **Picking Sides:** How often does the model side with the user regardless of correctness?
 
 During debate, the three main metrics used are SWK, AR, and CS.
+
+## Reference
+
+If you found our work or this codebase useful in your research, please consider citing
+
+```
+@misc{kasprova2026politedisagreeunderstandingsycophancy,
+      title={Too Polite to Disagree: Understanding Sycophancy Propagation in Multi-Agent Systems}, 
+      author={Vira Kasprova and Amruta Parulekar and Abdulrahman AlRabah and Krishna Agaram and Ritwik Garg and Sagar Jha and Nimet Beyza Bozdag and Dilek Hakkani-Tur},
+      year={2026},
+      eprint={2604.02668},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2604.02668}, 
+}
+```
