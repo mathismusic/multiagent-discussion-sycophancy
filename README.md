@@ -199,6 +199,10 @@ BSS is computed from four metrics (see `bss_calc.py`):
 
 During debate, the three main metrics used are SWK, AR, and CS.
 
+## License
+
+Code is released under the [MIT License](LICENSE).
+
 ## Citation
 
 If you found our work or this codebase useful in your research, please consider citing:
