@@ -1,39 +1,79 @@
-# Sycophancy-Aware Multi-Agent Debate
+<div align="center">
 
-Code to go with the paper ``Too Polite to Disagree: Understanding Sycophancy Propagation in Multi-Agent Systems'' (SIGDIAL 2026).
+  <h1>Too Polite to Disagree: Understanding Sycophancy Propagation in Multi-Agent Systems</h1>
 
-arXiv: [https://arxiv.org/pdf/2604.02668](https://arxiv.org/pdf/2604.02668)
+  <p>
+    <a href="https://arxiv.org/abs/2604.02668"><img src="https://img.shields.io/badge/arXiv-2604.02668-b31b1b" alt="arXiv"></a>
+    <a href="https://arxiv.org/pdf/2604.02668"><img src="https://img.shields.io/badge/SIGDIAL-2026-4a5fc1" alt="SIGDIAL 2026"></a>
+  </p>
 
-## Requirements
+  <p><i>Telling agents which of their peers are sycophants makes multi-agent discussions<br>more disagreeable — and <b>more accurate</b>.</i></p>
+</div>
 
-- Python 3.10+
-- PyTorch with CUDA
-- Hugging Face `transformers`, `datasets`, `huggingface_hub`
-- `pydantic`, `numpy`, `pandas`, `matplotlib`, `seaborn`
+---
 
-Set `HF_API_KEY` in your environment if needed for gated models.
+## Abstract
 
-Install dependencies:
-```bash
-pip install torch transformers datasets huggingface_hub pydantic numpy pandas matplotlib seaborn
-```
-https://github.com/0awesomeapples-dev/multiagent-discussion-sycophancy.git
+Large language models (LLMs) often exhibit sycophancy: agreement with user stance even when it conflicts with the model's opinion. While prior work has mostly studied this in single-agent settings, it remains underexplored in collaborative multi-agent systems. We ask whether awareness of other agents' sycophancy levels influences discussion outcomes. To investigate this, we run controlled experiments with six open-source LLMs, providing agents with peer sycophancy rankings that estimate each peer's tendency toward sycophancy. These rankings are based on scores calculated using various static (pre-discussion) and dynamic (online) strategies. We find that providing sycophancy priors reduces the influence of sycophancy-prone peers, mitigates error-cascades, and improves final discussion accuracy by an absolute 10.5%. Thus, this is a lightweight and efficient way to reduce model sycophancy during discussions and subsequently improve downstream accuracy.
+
+<div align="center">
+  <img src="fig1.png" width="620" alt="Multi-Agent Discussion Pipeline">
+</div>
+
+***Multi-Agent Discussion Pipeline.***
+
+- ***(a)*** *Computing base sycophancy scores (BSS) from single-agent queries on five MMLU subjects (Section 3.1). We also compute scores that involve discussion (Section 2.3).*
+- ***(b)*** *Running a 6-agent discussion for 5 rounds: Round 0 answers are independently obtained from the models; in rounds m ∈ {1, 2, 3, 4}, each agent sees its peers' latest answers and their sycophancy scores and is allowed to freely re-choose a stance. The discussion's outcome is the majority final-round stance across models.*
+
 ## Models
 
-The pipeline uses 6 models by default (short name -> HuggingFace ID):
+The pipeline uses 6 models by default:
 
-| Short Name | Model |
+| Name | Huggingface Model |
 |---|---|
-| `llama3b`  | `meta-llama/Llama-3.2-3B-Instruct` |
-| `llama8b`  | `meta-llama/Llama-3.1-8B-Instruct` |
-| `qwen3b`   | `Qwen/Qwen2.5-3B-Instruct` |
-| `qwen7b`   | `Qwen/Qwen2.5-7B-Instruct` |
-| `qwen14b`  | `Qwen/Qwen2.5-14B-Instruct` |
-| `qwen32b`  | `Qwen/Qwen2.5-32B-Instruct` |
+| `llama3b`  | [`meta-llama/Llama-3.2-3B-Instruct`](https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct) |
+| `llama8b`  | [`meta-llama/Llama-3.1-8B-Instruct`](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct) |
+| `qwen3b`   | [`Qwen/Qwen2.5-3B-Instruct`](https://huggingface.co/Qwen/Qwen2.5-3B-Instruct) |
+| `qwen7b`   | [`Qwen/Qwen2.5-7B-Instruct`](https://huggingface.co/Qwen/Qwen2.5-7B-Instruct) |
+| `qwen14b`  | [`Qwen/Qwen2.5-14B-Instruct`](https://huggingface.co/Qwen/Qwen2.5-14B-Instruct) |
+| `qwen32b`  | [`Qwen/Qwen2.5-32B-Instruct`](https://huggingface.co/Qwen/Qwen2.5-32B-Instruct) |
+
+## Repository Layout
+
+```
+generate_bss_dss_data.py      build the BSS / DSS datasets from MMLU
+bss_calc.py                   compute Baseline Sycophancy Scores (BSS) per model
+compute_knowledge_flags.py    pre-compute per-model knowledge flags for each question
+multiagent-debate.py          run a multi-agent debate experiment (all score modes)
+evaluate.py                   score debate logs, produce per-experiment evals + comparison
+plot_seed123.py               plot cross-experiment results
+
+prompt.py                     debate and scoring prompts
+logprobs_model.py             logprob-based soft sycophancy measurement
+response_models.py            pydantic schemas for structured model responses
+utils.py                      shared helpers
+
+run_all_experiments.sh        full pipeline: data → BSS → flags → 9 experiments → eval
+run_all_experiments_seeded.sh same, with a custom random seed
+run_novel_subject_expt.sh     generalization to 15 unseen MMLU subjects
+
+scores/                       precomputed BSS scores and knowledge flags
+```
 
 ## Quick Start
 
-### Full pipeline (recommended)
+### 1. Set up an environment
+
+Requires Python 3.10+ and PyTorch with CUDA.
+
+```bash
+git clone https://github.com/0awesomeapples-dev/multiagent-discussion-sycophancy && cd multiagent-discussion-sycophancy
+pip install -r requirements.txt
+```
+
+Set `HF_API_KEY` in your environment if needed for gated models.
+
+### 2. Run the full pipeline (recommended)
 
 Runs everything end-to-end: data generation, BSS computation, knowledge flags, all 9 debate experiments, and evaluation.
 
@@ -59,7 +99,7 @@ bash run_all_experiments.sh
 
 Results are saved to `logs/<experiment>/log.jsonl` with evaluations in `logs/<experiment>/eval/` and a cross-experiment comparison in `logs/comparison.csv`.
 
-### With a different random seed
+### 3. Run with a different random seed
 
 ```bash
 bash run_all_experiments_seeded.sh 123
@@ -67,7 +107,7 @@ bash run_all_experiments_seeded.sh 123
 
 Results go to `logs_seed123/`. Runs all 8 experiments.
 
-### Novel-subject generalization experiment
+### 4. Novel-subject generalization experiment
 
 Tests whether BSS scores computed on the original 5 MMLU subjects generalize to 15 new subjects.
 
@@ -159,18 +199,18 @@ BSS is computed from four metrics (see `bss_calc.py`):
 
 During debate, the three main metrics used are SWK, AR, and CS.
 
-## Reference
+## Citation
 
-If you found our work or this codebase useful in your research, please consider citing
+If you found our work or this codebase useful in your research, please consider citing:
 
-```
-@misc{kasprova2026politedisagreeunderstandingsycophancy,
-      title={Too Polite to Disagree: Understanding Sycophancy Propagation in Multi-Agent Systems}, 
-      author={Vira Kasprova and Amruta Parulekar and Abdulrahman AlRabah and Krishna Agaram and Ritwik Garg and Sagar Jha and Nimet Beyza Bozdag and Dilek Hakkani-Tur},
-      year={2026},
-      eprint={2604.02668},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2604.02668}, 
+```bibtex
+@misc{kasprova2026politedisagree,
+  title  = {Too Polite to Disagree: Understanding Sycophancy Propagation in Multi-Agent Systems},
+  author = {Kasprova, Vira and Parulekar, Amruta and AlRabah, Abdulrahman and Agaram, Krishna and Garg, Ritwik and Jha, Sagar and Bozdag, Nimet Beyza and Hakkani-Tur, Dilek},
+  year   = {2026},
+  eprint = {2604.02668},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+  url    = {https://arxiv.org/abs/2604.02668}
 }
 ```
